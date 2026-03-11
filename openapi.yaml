@@ -1,0 +1,172 @@
+openapi: 3.0.3
+info:
+  title: Student Grades API
+  version: 1.0.0
+  description: REST API for managing student records and grades.
+servers:
+  - url: http://localhost:5000
+paths:
+  /students/{student_id}:
+    parameters:
+      - name: student_id
+        in: path
+        required: true
+        description: Unique student identifier.
+        schema:
+          type: string
+          maxLength: 10
+    get:
+      summary: Get a student by ID
+      responses:
+        '200':
+          description: Student record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        '404':
+          description: Student not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create a new student record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentCreate'
+            examples:
+              example:
+                value:
+                  name: Jane Doe
+                  course: Software Engineering
+                  grade: 92
+      responses:
+        '201':
+          description: Student created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '400':
+          description: Invalid input or student already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update a student record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentUpdate'
+      responses:
+        '200':
+          description: Student updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Student not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete a student record
+      responses:
+        '200':
+          description: Student deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '404':
+          description: Student not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Student:
+      type: object
+      properties:
+        student_id:
+          type: string
+          maxLength: 10
+        name:
+          type: string
+          maxLength: 100
+        course:
+          type: string
+          maxLength: 100
+        grade:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+      required:
+        - student_id
+        - name
+        - course
+        - grade
+    StudentCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        course:
+          type: string
+          maxLength: 100
+        grade:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+      required:
+        - name
+        - course
+        - grade
+    StudentUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        course:
+          type: string
+          maxLength: 100
+        grade:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+      additionalProperties: false
+    Message:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
